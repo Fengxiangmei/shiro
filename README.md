@@ -118,7 +118,7 @@
 
 **SecurityManager**：安全管理器；即所有与安全有关的操作都会与 SecurityManager 交互；且它管理着所有 Subject；可以看出它是 Shiro 的核心，它负责与后边介绍的其他组件进行交互，如果学习过 SpringMVC，你可以把它看成 DispatcherServlet 前端控制器；
 
-**Realm**：域，Shiro 从从 Realm 获取安全数据（如用户、角色、权限），就是说 SecurityManager 要验证用户身份，那么它需要从 Realm 获取相应的用户进行比较以确定用户身份是否合法；也需要从 Realm 得到用户相应的角色 / 权限进行验证用户是否能进行操作；可以把 Realm 看成 DataSource，即安全数据源。
+**Realm**：域，Shiro 从 Realm 获取安全数据（如用户、角色、权限），就是说 SecurityManager 要验证用户身份，那么它需要从 Realm 获取相应的用户进行比较以确定用户身份是否合法；也需要从 Realm 得到用户相应的角色 / 权限进行验证用户是否能进行操作；可以把 Realm 看成 DataSource，即安全数据源。
 
 也就是说对于我们而言，最简单的一个 Shiro 应用：
 
@@ -271,7 +271,29 @@ user:create：表示对用户资源进行create操作，相当于user:create:*�
 user：*：01  表示对用户资源实例01进行所有操作。
 ```
 
-3.测试：
+3.配置application.yml
+
+```properties
+spring:
+  datasource:
+    url: jdbc:mysql://localhost:3306/test
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver
+  jpa:
+    show-sql: true #控制台打印sql
+    hibernate:
+      ddl-auto: update #建表策略，这里用update，即根据实体更新表结构
+    database: mysql #指定数据库类型
+    database-platform: org.hibernate.dialect.MySQL5InnoDBDialect
+    open-in-view: true
+
+  thymeleaf:
+    cache: false
+    mode: LEGACYHTML5
+```
+
+4.测试：
 
 Shiro支持的授权方式:
 
@@ -730,7 +752,7 @@ public class ShiroConfig {
         // “/user/student” 开头的用户需要角色认证，是“admin”才允许
         filterChainMap.put("/user/student*/**", "roles[admin]");
         // “/user/teacher” 开头的用户需要权限认证，是“user:create”才允许
-        filterChainMap.put("/user/teacher*/**", "perms[\"user:create\"]");
+        filterChainMap.put("/user/teacher*/**", "perms[user:create]");
 
         // 配置 logout 过滤器
         filterChainMap.put("/logout", "logout");
